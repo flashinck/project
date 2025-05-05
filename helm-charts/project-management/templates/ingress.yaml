@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  annotations:
+    {{ toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  rules:
+  - host: {{ (index .Values.ingress.hosts 0).host }}
+    http:
+      paths:
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: {{ .Values.services.auth.port }}
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port:
+              number: {{ .Values.services.user.port }}
+      - path: /projects
+        pathType: Prefix
+        backend:
+          service:
+            name: project-service
+            port:
+              number: {{ .Values.services.project.port }}
+      - path: /tasks
+        pathType: Prefix
+        backend:
+          service:
+            name: task-service
+            port:
+              number: {{ .Values.services.task.port }}
+      - path: /reports
+        pathType: Prefix
+        backend:
+          service:
+            name: report-service
+            port:
+              number: {{ .Values.services.report.port }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: {{ .Values.services.frontend.port }}
