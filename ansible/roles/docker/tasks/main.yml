@@ -1,0 +1,61 @@
+---
+- name: Добавление ключа GPG для Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Добавление репозитория Docker
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    state: present
+
+- name: Установка Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+    update_cache: yes
+
+- name: Запуск и включение Docker
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Добавление пользователя в группу docker
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Установка docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+
+- name: Клонирование репозитория
+  git:
+    repo: "{{ git_repo }}"
+    dest: /home/{{ ansible_user }}/project-management-system
+    version: main
+
+- name: Логин в Docker Hub
+  docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+
+- name: Сборка и пуш Docker-образов
+  shell: |
+    cd /home/{{ ansible_user }}/project-management-system/{{ item }}
+    docker build -t {{ dockerhub_username }}/{{ item | replace('-service', '') }}:latest .
+    docker push {{ dockerhub_username }}/{{ item | replace('-service', '') }}:latest
+  loop:
+    - auth-service
+    - user-service
+    - project-service
+    - task-service
+    - report-service
+    - frontend
