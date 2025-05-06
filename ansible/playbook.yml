@@ -1,0 +1,15 @@
+---
+- name: Развертывание системы управления проектами в Kubernetes
+  hosts: master
+  become: yes
+  vars:
+    dockerhub_username: your_dockerhub_username
+    dockerhub_password: your_dockerhub_password
+    git_repo: https://github.com/your_username/project-management-system.git
+    helm_version: v3.8.0
+  roles:
+    - common
+    - docker
+    - helm
+    - ingress
+    - jenkins
