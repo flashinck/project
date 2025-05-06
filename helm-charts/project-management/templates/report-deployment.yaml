@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-report
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: report
+  template:
+    metadata:
+      labels:
+        app: report
+    spec:
+      containers:
+      - name: report
+        image: {{ .Values.image.repository }}/report-service:{{ .Values.image.tag }}
+        ports:
+        - containerPort: {{ .Values.services.report.port }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.dbname }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.username }}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.postgres.password }}
+        - name: POSTGRES_HOST
+          value: {{ .Release.Name }}-postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: report-service
+spec:
+  selector:
+    app: report
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.report.port }}
+      targetPort: {{ .Values.services.report.port }}
