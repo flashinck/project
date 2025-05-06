@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-auth
+  name: {{ .Release.Name }}-user
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: auth
+      app: user
   template:
     metadata:
       labels:
-        app: auth
+        app: user
     spec:
       containers:
-      - name: auth
-        image: {{ .Values.image.repository }}/auth-service:{{ .Values.image.tag }}
+      - name: user
+        image: {{ .Values.image.repository }}/user-service:{{ .Values.image.tag }}
         ports:
-        - containerPort: {{ .Values.services.auth.port }}
+        - containerPort: {{ .Values.services.user.port }}
         env:
         - name: POSTGRES_DB
           value: {{ .Values.postgres.dbname }}
@@ -30,11 +30,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
+  name: user-service
 spec:
   selector:
-    app: auth
+    app: user
   ports:
     - protocol: TCP
-      port: {{ .Values.services.auth.port }}
-      targetPort: {{ .Values.services.auth.port }}
+      port: {{ .Values.services.user.port }}
+      targetPort: {{ .Values.services.user.port }}
