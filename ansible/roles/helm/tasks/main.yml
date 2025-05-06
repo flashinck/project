@@ -1,0 +1,23 @@
+---
+- name: Скачивание Helm
+  get_url:
+    url: https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz
+    dest: /tmp/helm-{{ helm_version }}-linux-amd64.tar.gz
+
+- name: Распаковка Helm
+  unarchive:
+    src: /tmp/helm-{{ helm_version }}-linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Установка Helm
+  copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin/helm
+    mode: '0755'
+    remote_src: yes
+
+- name: Развертывание Helm-чарта
+  command: helm install project-management /home/{{ ansible_user }}/project-management-system/helm-charts/project-management
+  environment:
+    KUBECONFIG: /home/{{ ansible_user }}/.kube/config
