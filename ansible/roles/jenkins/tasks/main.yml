@@ -1,0 +1,17 @@
+---
+- name: Копирование docker-compose.yml
+  copy:
+    src: /home/{{ ansible_user }}/project-management-system/docker-compose.yml
+    dest: /home/{{ ansible_user }}/docker-compose.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Запуск Jenkins
+  command: docker-compose -f /home/{{ ansible_user }}/docker-compose.yml up -d
+
+- name: Ожидание запуска Jenkins
+  wait_for:
+    host: localhost
+    port: 8080
+    delay: 10
+    timeout: 300
