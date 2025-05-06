@@ -35,3 +35,7 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
