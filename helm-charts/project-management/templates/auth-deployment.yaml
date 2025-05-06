@@ -26,6 +26,8 @@ spec:
           value: {{ .Values.postgres.password }}
         - name: POSTGRES_HOST
           value: {{ .Release.Name }}-postgres
+        - name: SECRET_KEY
+          value: "your_secret_key_here"
 ---
 apiVersion: v1
 kind: Service
